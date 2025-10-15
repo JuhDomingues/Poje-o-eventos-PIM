@@ -1213,7 +1213,12 @@
             const scenario = document.getElementById('scenario').value;
 
             const data = eventData[eventType];
-            const leadsNeeded = Math.ceil(participants / data.conversionRate);
+            let conversionRate = data.conversionRate;
+            if (scenario === 'realistic') {
+                conversionRate = 0.25;
+            }
+
+            const leadsNeeded = Math.ceil(participants / conversionRate);
             
             let baseCPL;
             if (location === 'miami') baseCPL = data.cplMiami;
@@ -1243,7 +1248,7 @@
             document.getElementById('leadsResult').textContent = leadsNeeded.toLocaleString();
             document.getElementById('cplResult').textContent = '$' + cpl.toFixed(2);
             document.getElementById('safetyBudget').textContent = formatCurrency(safetyBudget);
-            document.getElementById('conversionRate').textContent = (data.conversionRate * 100).toFixed(1) + '%';
+            document.getElementById('conversionRate').textContent = (conversionRate * 100).toFixed(1) + '%';
             document.getElementById('ticketRevenue').textContent = formatCurrency(ticketMin) + ' - ' + formatCurrency(ticketMax);
             document.getElementById('mentoringRevenue').textContent = formatCurrency(mentoringMin) + ' - ' + formatCurrency(mentoringMax);
             document.getElementById('totalRevenue').textContent = formatCurrency(revenueMin) + ' - ' + formatCurrency(revenueMax);
