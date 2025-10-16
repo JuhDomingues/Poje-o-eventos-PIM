@@ -694,12 +694,21 @@
                 </div>
 
                 <div class="input-group">
-                    <label>💰 Cenário de Investimento</label>
-                    <select id="scenario" onchange="calculateInvestment()">
-                        <option value="ideal">💎 Ideal</option>
-                        <option value="optimistic">🌟 Otimista</option>
-                        <option value="realistic" selected>⚖️ Realista</option>
-                        <option value="conservative">🛡️ Conservador</option>
+                    <label>💵 Nível de CPL (Custo por Lead)</label>
+                    <select id="cplLevel" onchange="calculateInvestment()">
+                        <option value="low">🟢 Baixo (-30%)</option>
+                        <option value="medium" selected>🟡 Médio (Base)</option>
+                        <option value="high">🔴 Alto (+20%)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>📈 Taxa de Conversão Lead → Venda</label>
+                    <select id="conversionLevel" onchange="calculateInvestment()">
+                        <option value="ideal">💎 Ideal (20%)</option>
+                        <option value="optimistic">🌟 Otimista (10%)</option>
+                        <option value="realistic" selected>⚖️ Realista (5%)</option>
+                        <option value="conservative">🛡️ Conservador (3%)</option>
                     </select>
                 </div>
             </div>
@@ -1190,14 +1199,14 @@
             }
         };
 
-        const scenarios = {
-            ideal: 0.7,          // CPL reduzido em 30%
-            optimistic: 0.8,     // CPL reduzido em 20%
-            realistic: 1.0,      // CPL base
-            conservative: 1.2    // CPL aumentado em 20%
+        // Níveis de CPL (multiplicadores do CPL base)
+        const cplLevels = {
+            low: 0.7,      // CPL reduzido em 30%
+            medium: 1.0,   // CPL base
+            high: 1.2      // CPL aumentado em 20%
         };
 
-        // Taxas de conversão de leads para venda de ingressos por cenário
+        // Taxas de conversão de leads para venda de ingressos
         const conversionRates = {
             conservative: 0.03,  // 3% de conversão
             realistic: 0.05,     // 5% de conversão
@@ -1220,21 +1229,22 @@
             const eventType = document.getElementById('eventType').value;
             const location = document.getElementById('location').value;
             const participants = parseInt(document.getElementById('participants').value);
-            const scenario = document.getElementById('scenario').value;
+            const cplLevel = document.getElementById('cplLevel').value;
+            const conversionLevel = document.getElementById('conversionLevel').value;
 
             const data = eventData[eventType];
 
-            // Usa a taxa de conversão de leads para ingressos baseada no cenário
-            const conversionRate = conversionRates[scenario];
+            // Usa a taxa de conversão de leads para ingressos baseada no nível selecionado
+            const conversionRate = conversionRates[conversionLevel];
 
             const leadsNeeded = Math.ceil(participants / conversionRate);
-            
+
             let baseCPL;
             if (location === 'miami') baseCPL = data.cplMiami;
             else if (location === 'charleston') baseCPL = data.cplCharleston;
             else baseCPL = data.cplTampa;
 
-            const cpl = baseCPL * scenarios[scenario];
+            const cpl = baseCPL * cplLevels[cplLevel];
             const investment = Math.ceil(leadsNeeded * cpl);
             const safetyBudget = Math.ceil(investment * 1.2);
 
